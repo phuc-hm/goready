@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kế hoạch Phượt 9N8Đ: Sài Gòn - Măng Đen - Lý Sơn (Tích hợp Gemini AI)</title>
+    <title>Kế hoạch Phượt 9N8Đ: Sài Gòn - Măng Đen - Lý Sơn</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -56,29 +55,6 @@
             height: 400px;
             max-height: 80vh;
         }
-        .gemini-btn {
-            background: linear-gradient(to right, #fde68a, #f59e0b);
-            border: none;
-            color: #422006;
-        }
-        .gemini-btn:hover {
-            opacity: 0.9;
-        }
-        .loader {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #D97706;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .modal-overlay {
-            background-color: rgba(0,0,0,0.5);
-        }
     </style>
 </head>
 <body class="antialiased">
@@ -87,12 +63,11 @@
         <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
             <div class="flex items-center justify-between h-16">
                 <div class="flex-shrink-0">
-                    <h1 class="text-xl font-bold text-amber-700">Chuyến đi 9N8Đ ✨</h1>
+                    <h1 class="text-xl font-bold text-amber-700">Chuyến đi 9N8Đ</h1>
                 </div>
                 <div class="hidden md:block">
                     <div class="ml-10 flex items-baseline space-x-4">
                         <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Tổng quan</a>
-                        <a href="#preparation" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Chuẩn bị</a>
                         <a href="#itinerary" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Lịch trình</a>
                         <a href="#costs" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Chi phí</a>
                         <a href="#map" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Bản đồ</a>
@@ -144,17 +119,6 @@
             </div>
         </section>
 
-        <section id="preparation" class="mb-12">
-            <h2 class="text-3xl font-bold mb-6 text-gray-800">Chuẩn bị & Gợi ý AI</h2>
-            <div class="bg-white p-6 rounded-lg shadow-md">
-                <h3 class="text-xl font-semibold mb-4 text-gray-700">Trợ lý AI cho chuyến đi</h3>
-                <p class="text-sm text-gray-500 mb-4">Bạn không chắc cần chuẩn bị những gì? Hãy để Gemini giúp bạn tạo một danh sách đồ dùng đầy đủ và phù hợp nhất với hành trình này.</p>
-                <button id="packing-list-btn" class="gemini-btn font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
-                    ✨ Tạo danh sách đồ dùng AI
-                </button>
-            </div>
-        </section>
-
         <section id="itinerary" class="mb-12">
             <h2 class="text-3xl font-bold mb-6 text-gray-800">Lịch Trình Chi Tiết</h2>
             <div id="itinerary-container" class="space-y-4">
@@ -186,19 +150,6 @@
         </section>
     </main>
 
-    <!-- Modal for Packing List -->
-    <div id="packing-list-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-overlay hidden">
-        <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-2/3 lg:w-1/2 max-h-[80vh] flex flex-col">
-            <div class="flex justify-between items-center p-4 border-b">
-                <h3 class="text-xl font-semibold text-gray-700">✨ Danh sách đồ dùng gợi ý từ AI</h3>
-                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800">&times;</button>
-            </div>
-            <div id="modal-content" class="p-6 overflow-y-auto">
-                <!-- AI content will be injected here -->
-            </div>
-        </div>
-    </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const tripData = {
@@ -210,9 +161,9 @@
                         data: [1200000, 3200000, 2700000, 2000000, 1710000],
                     },
                     itinerary: [
-                        { day: 5, date: '03/09', title: 'Quảng Ngãi – Đảo Lý Sơn', location: 'Đảo Lý Sơn', distance: '~40 km', time: 'Cả ngày', details: '<b>06:30:</b> Dậy sớm, trả phòng, ăn sáng nhẹ.<br><b>07:00:</b> Di chuyển ra cảng Sa Kỳ (Gửi xe máy hoặc vận chuyển xe máy ra đảo).<br><b>07:30 - 08:00:</b> Lên tàu cao tốc ra đảo (cần đặt vé trước).<br><b>~09:00:</b> Tàu cập bến <b>Đảo Lý Sơn</b>. Nhận phòng, thuê xe máy trên đảo.<br><b>10:00:</b> Bắt đầu khám phá Đảo Lớn: Cột cờ Tổ quốc trên đỉnh Thới Lới, Hang Câu.<br><b>12:00 - 13:30:</b> Ăn trưa với hải sản tươi sống.<br><b>14:00:</b> Tham quan Chùa Hang.<br><b>~17:00:</b> Di chuyển ra <b>Cổng Tò Vò</b> để ngắm hoàng hôn.<br><b>Tối:</b> Dạo chợ đêm, thưởng thức hải sản.' },
-                        { day: 6, date: '04/09', title: 'Khám phá Đảo Bé (An Bình)', location: 'Đảo Lý Sơn', distance: '~10 km', time: 'Cả ngày', details: '<b>07:30:</b> Ăn sáng trên Đảo Lớn.<br><b>08:00:</b> Ra bến tàu, đi cano qua <b>Đảo Bé</b>.<br><b>08:30 - 11:30:</b> Tự do tắm biển, lặn ngắm san hô.<br><b>11:30 - 12:30:</b> Ăn trưa trên Đảo Bé.<br><b>~13:30:</b> Lên cano về lại Đảo Lớn.<br><b>Chiều:</b> Tự do nghỉ ngơi hoặc đi thăm các cánh đồng tỏi.<br><b>Tối:</b> Tận hưởng đêm cuối cùng trên đảo.' },
-                        { day: 7, date: '05/09', title: 'Lý Sơn – Quy Nhơn', location: 'Quy Nhơn', distance: '~180 km', time: '~6 giờ', details: '<b>Sáng:</b> Lên chuyến tàu sớm nhất (khoảng 08:00) từ Lý Sơn về đất liền.<br><b>~09:00:</b> Cập cảng Sa Kỳ.<br><b>09:30:</b> Xuất phát đi Quy Nhơn.<br><b>12:00 - 13:00:</b> Ăn trưa tại khu vực <b>Sa Huỳnh</b>.<br><b>13:00 - 14:30:</b> Sau khi ăn trưa, ghé thăm <b>Làng cổ Gò Cỏ</b> và <b>bãi biển Làng Gò Cỏ</b>.<br><b>~16:00 - 16:30:</b> Đến <b>TP. Quy Nhơn</b>, nhận phòng.<br><b>Chiều tối:</b> Tự do dạo biển Quy Nhơn, ăn tối, khám phá quảng trường trung tâm.' },
+                        { day: 5, date: '03/09', title: 'Quảng Ngãi – Đảo Lý Sơn', distance: '~40 km', time: 'Cả ngày', details: '<b>06:30:</b> Dậy sớm, trả phòng, ăn sáng nhẹ.<br><b>07:00:</b> Di chuyển ra cảng Sa Kỳ (Gửi xe máy hoặc vận chuyển xe máy ra đảo).<br><b>07:30 - 08:00:</b> Lên tàu cao tốc ra đảo (cần đặt vé trước).<br><b>~09:00:</b> Tàu cập bến <b>Đảo Lý Sơn</b>. Nhận phòng, thuê xe máy trên đảo.<br><b>10:00:</b> Bắt đầu khám phá Đảo Lớn: Cột cờ Tổ quốc trên đỉnh Thới Lới, Hang Câu.<br><b>12:00 - 13:30:</b> Ăn trưa với hải sản tươi sống.<br><b>14:00:</b> Tham quan Chùa Hang.<br><b>~17:00:</b> Di chuyển ra <b>Cổng Tò Vò</b> để ngắm hoàng hôn.<br><b>Tối:</b> Dạo chợ đêm, thưởng thức hải sản.' },
+                        { day: 6, date: '04/09', title: 'Khám phá Đảo Bé (An Bình)', distance: '~10 km', time: 'Cả ngày', details: '<b>07:30:</b> Ăn sáng trên Đảo Lớn.<br><b>08:00:</b> Ra bến tàu, đi cano qua <b>Đảo Bé</b>.<br><b>08:30 - 11:30:</b> Tự do tắm biển, lặn ngắm san hô.<br><b>11:30 - 12:30:</b> Ăn trưa trên Đảo Bé.<br><b>~13:30:</b> Lên cano về lại Đảo Lớn.<br><b>Chiều:</b> Tự do nghỉ ngơi hoặc đi thăm các cánh đồng tỏi.<br><b>Tối:</b> Tận hưởng đêm cuối cùng trên đảo.' },
+                        { day: 7, date: '05/09', title: 'Lý Sơn – Quy Nhơn', distance: '~180 km', time: '~6 giờ', details: '<b>Sáng:</b> Lên chuyến tàu sớm nhất (khoảng 08:00) từ Lý Sơn về đất liền.<br><b>~09:00:</b> Cập cảng Sa Kỳ.<br><b>09:30:</b> Xuất phát đi Quy Nhơn.<br><b>12:00 - 13:00:</b> Ăn trưa tại khu vực <b>Sa Huỳnh</b>.<br><b>13:00 - 14:30:</b> Sau khi ăn trưa, ghé thăm <b>Làng cổ Gò Cỏ</b> và <b>bãi biển Làng Gò Cỏ</b>.<br><b>~16:00 - 16:30:</b> Đến <b>TP. Quy Nhơn</b>, nhận phòng.<br><b>Chiều tối:</b> Tự do dạo biển Quy Nhơn, ăn tối, khám phá quảng trường trung tâm.' },
                     ]
                 },
                 planB: {
@@ -223,18 +174,18 @@
                         data: [1200000, 3200000, 2700000, 2000000, 400000],
                     },
                     itinerary: [
-                        { day: 5, date: '03/09', title: 'Khám phá Quảng Ngãi & Biển Mỹ Khê', location: 'Quảng Ngãi', distance: '~50 km', time: 'N/A', details: '<b>08:00 - 09:00:</b> Ăn sáng tại TP. Quảng Ngãi.<br><b>09:00 - 11:30:</b> Tham quan <b>Khu chứng tích Sơn Mỹ (Mỹ Lai)</b> để tìm hiểu về lịch sử.<br><b>11:30 - 13:00:</b> Quay về TP. Quảng Ngãi ăn trưa.<br><b>13:30 - 16:30:</b> Di chuyển ra <b>biển Mỹ Khê</b> để tắm biển, thư giãn.<br><b>Tối:</b> Tự do khám phá ẩm thực thành phố.' },
-                        { day: 6, date: '04/09', title: 'Quảng Ngãi – Sa Huỳnh', location: 'Sa Huỳnh', distance: '~60 km', time: '~2 giờ', details: '<b>Sáng:</b> Ăn sáng, trả phòng tại TP. Quảng Ngãi.<br><b>09:00:</b> Xuất phát đi <b>Sa Huỳnh</b>.<br><b>~11:00:</b> Đến Sa Huỳnh, nhận phòng, ăn trưa với hải sản.<br><b>Chiều:</b> Tham quan <b>Làng cổ Gò Cỏ</b>, bãi biển Làng Gò Cỏ. Tìm hiểu về <b>văn hóa Sa Huỳnh</b> và các cánh đồng muối.<br><b>Tối:</b> Nghỉ đêm tại Sa Huỳnh.' },
-                        { day: 7, date: '05/09', title: 'Sa Huỳnh – Quy Nhơn', location: 'Quy Nhơn', distance: '~120 km', time: '~3 giờ', details: '<b>Sáng:</b> Thong thả ăn sáng tại Sa Huỳnh.<br><b>09:00:</b> Xuất phát đi Quy Nhơn.<br><b>~12:30:</b> Đến <b>TP. Quy Nhơn</b>, nhận phòng, ăn trưa.<br><b>Chiều:</b> Có nhiều thời gian hơn để dạo biển, khám phá thành phố. Gợi ý: Ghềnh Ráng Tiên Sa & Mộ Hàn Mặc Tử.' },
+                        { day: 5, date: '03/09', title: 'Khám phá Quảng Ngãi & Biển Mỹ Khê', distance: '~50 km', time: 'N/A', details: '<b>08:00 - 09:00:</b> Ăn sáng tại TP. Quảng Ngãi.<br><b>09:00 - 11:30:</b> Tham quan <b>Khu chứng tích Sơn Mỹ (Mỹ Lai)</b> để tìm hiểu về lịch sử.<br><b>11:30 - 13:00:</b> Quay về TP. Quảng Ngãi ăn trưa.<br><b>13:30 - 16:30:</b> Di chuyển ra <b>biển Mỹ Khê</b> để tắm biển, thư giãn.<br><b>Tối:</b> Tự do khám phá ẩm thực thành phố.' },
+                        { day: 6, date: '04/09', title: 'Quảng Ngãi – Sa Huỳnh', distance: '~60 km', time: '~2 giờ', details: '<b>Sáng:</b> Ăn sáng, trả phòng tại TP. Quảng Ngãi.<br><b>09:00:</b> Xuất phát đi <b>Sa Huỳnh</b>.<br><b>~11:00:</b> Đến Sa Huỳnh, nhận phòng, ăn trưa với hải sản.<br><b>Chiều:</b> Tham quan <b>Làng cổ Gò Cỏ</b>, bãi biển Làng Gò Cỏ. Tìm hiểu về <b>văn hóa Sa Huỳnh</b> và các cánh đồng muối.<br><b>Tối:</b> Nghỉ đêm tại Sa Huỳnh.' },
+                        { day: 7, date: '05/09', title: 'Sa Huỳnh – Quy Nhơn', distance: '~120 km', time: '~3 giờ', details: '<b>Sáng:</b> Thong thả ăn sáng tại Sa Huỳnh.<br><b>09:00:</b> Xuất phát đi Quy Nhơn.<br><b>~12:30:</b> Đến <b>TP. Quy Nhơn</b>, nhận phòng, ăn trưa.<br><b>Chiều:</b> Có nhiều thời gian hơn để dạo biển, khám phá thành phố. Gợi ý: Ghềnh Ráng Tiên Sa & Mộ Hàn Mặc Tử.' },
                     ]
                 },
                 baseItinerary: [
-                    { day: 1, date: '30/08', title: 'TP.HCM – Buôn Ma Thuột', location: 'Buôn Ma Thuột', distance: '~350 km', time: '~11.5 giờ', details: '<b>04:00:</b> Xuất phát từ TP.HCM.<br><b>06:30 - 07:15:</b> Ăn sáng tại TP. Đồng Xoài.<br><b>11:00 - 12:00:</b> Ăn trưa tại TP. Gia Nghĩa.<br><b>~15:30:</b> Đến Buôn Ma Thuột, nhận phòng.<br><b>Chiều & Tối:</b> Khám phá Bảo tàng Cà phê, Buôn Akô Dhông.' },
-                    { day: 2, date: '31/08', title: 'Buôn Ma Thuột – Măng Đen', location: 'Măng Đen', distance: '~280 km', time: '~8 giờ', details: '<b>06:30 - 07:30:</b> Ăn sáng, uống cà phê tại Buôn Ma Thuột, trả phòng.<br><b>07:30:</b> Xuất phát đi Măng Đen.<br><b>11:30 - 12:30:</b> Ăn trưa tại TP. Pleiku (Thưởng thức Phở khô Gia Lai).<br><b>~15:30:</b> Đến Măng Đen, nhận phòng.<br><b>Tối:</b> Tận hưởng không khí se lạnh, thưởng thức đặc sản.' },
-                    { day: 3, date: '01/09', title: 'Khám phá Măng Đen', location: 'Măng Đen', distance: 'N/A', time: 'N/A', details: '<b>06:00 - 08:00:</b> "Săn mây" và uống cà phê tại các quán có view đẹp.<br><b>08:30 - 11:30:</b> Tham quan Chùa Khánh Lâm và Làng văn hóa Kon Bring.<br><b>11:30 - 13:00:</b> Ăn trưa và nghỉ ngơi.<br><b>13:00 - 16:30:</b> Khám phá rừng thông, ghé thăm các vườn nông nghiệp công nghệ cao.<br><b>Tối:</b> Tự do khám phá ẩm thực, mua sắm đặc sản.' },
-                    { day: 4, date: '02/09', title: 'Măng Đen – TP. Quảng Ngãi', location: 'Quảng Ngãi', distance: '~160 km', time: '~4.5 giờ', details: '<b>08:00 - 09:00:</b> Ăn sáng, uống cà phê tại Măng Đen.<br><b>09:00:</b> Xuất phát đi Quảng Ngãi.<br><b>~12:30:</b> Đến Quảng Ngãi, nhận phòng.<br><b>13:00 - 14:00:</b> Ăn trưa.<br><b>Chiều:</b> Kiểm tra thời tiết, quyết định Plan A/B.<br><b>Tối:</b> Quay về trung tâm, thưởng thức đặc sản don, ram bắp.' },
-                    { day: 8, date: '06/09', title: 'Quy Nhơn – Phan Rang', location: 'Quy Nhơn', distance: '~320 km', time: '~7 giờ', details: '<b>Sáng:</b> Dành trọn buổi sáng khám phá các điểm nổi bật của Quy Nhơn: Eo Gió, Kỳ Co.<br><b>Trưa:</b> Trả phòng, ăn trưa với đặc sản Quy Nhơn.<br><b>13:00:</b> Xuất phát đi Phan Rang.<br><b>15:30 - 15:45:</b> Nghỉ ngơi ngắn tại Tuy Hòa.<br><b>18:00 - 18:15:</b> Nghỉ ngơi ngắn tại Nha Trang.<br><b>~20:00:</b> Đến <b>TP. Phan Rang</b>, nhận phòng, ăn tối và nghỉ ngơi.' },
-                    { day: 9, date: '07/09', title: 'Phan Rang – TP.HCM', location: 'Phan Rang', distance: '~330 km', time: '~8 giờ', details: '<b>Sáng:</b> Ăn sáng tại Phan Rang.<br><b>07:00:</b> Xuất phát sớm về TP.HCM.<br><b>09:30 - 09:45:</b> Dừng chân nghỉ ngơi tại khu vực Phan Thiết.<br><b>12:00 - 13:00:</b> Ăn trưa tại khu vực Long Khánh.<br><b>~15:00 - 16:00:</b> Về đến <b>TP.HCM</b>, kết thúc chuyến đi an toàn.' },
+                    { day: 1, date: '30/08', title: 'TP.HCM – Buôn Ma Thuột', distance: '~350 km', time: '~11.5 giờ', details: '<b>04:00:</b> Xuất phát từ TP.HCM.<br><b>06:30 - 07:15:</b> Ăn sáng tại TP. Đồng Xoài.<br><b>11:00 - 12:00:</b> Ăn trưa tại TP. Gia Nghĩa.<br><b>~15:30:</b> Đến Buôn Ma Thuột, nhận phòng.<br><b>Chiều & Tối:</b> Khám phá Bảo tàng Cà phê, Buôn Akô Dhông.' },
+                    { day: 2, date: '31/08', title: 'Buôn Ma Thuột – Măng Đen', distance: '~280 km', time: '~8 giờ', details: '<b>06:30 - 07:30:</b> Ăn sáng, uống cà phê tại Buôn Ma Thuột, trả phòng.<br><b>07:30:</b> Xuất phát đi Măng Đen.<br><b>11:30 - 12:30:</b> Ăn trưa tại TP. Pleiku (Thưởng thức Phở khô Gia Lai).<br><b>~15:30:</b> Đến Măng Đen, nhận phòng.<br><b>Tối:</b> Tận hưởng không khí se lạnh, thưởng thức đặc sản.' },
+                    { day: 3, date: '01/09', title: 'Khám phá Măng Đen', distance: 'N/A', time: 'N/A', details: '<b>06:00 - 08:00:</b> "Săn mây" và uống cà phê tại các quán có view đẹp.<br><b>08:30 - 11:30:</b> Tham quan Chùa Khánh Lâm và Làng văn hóa Kon Bring.<br><b>11:30 - 13:00:</b> Ăn trưa và nghỉ ngơi.<br><b>13:00 - 16:30:</b> Khám phá rừng thông, ghé thăm các vườn nông nghiệp công nghệ cao.<br><b>Tối:</b> Tự do khám phá ẩm thực, mua sắm đặc sản.' },
+                    { day: 4, date: '02/09', title: 'Măng Đen – TP. Quảng Ngãi', distance: '~160 km', time: '~4.5 giờ', details: '<b>08:00 - 09:00:</b> Ăn sáng, uống cà phê tại Măng Đen.<br><b>09:00:</b> Xuất phát đi Quảng Ngãi.<br><b>~12:30:</b> Đến Quảng Ngãi, nhận phòng.<br><b>13:00 - 14:00:</b> Ăn trưa.<br><b>Chiều:</b> Kiểm tra thời tiết, quyết định Plan A/B.<br><b>Tối:</b> Quay về trung tâm, thưởng thức đặc sản don, ram bắp.' },
+                    { day: 8, date: '06/09', title: 'Quy Nhơn – Phan Rang', distance: '~320 km', time: '~7 giờ', details: '<b>Sáng:</b> Dành trọn buổi sáng khám phá các điểm nổi bật của Quy Nhơn: Eo Gió, Kỳ Co.<br><b>Trưa:</b> Trả phòng, ăn trưa với đặc sản Quy Nhơn.<br><b>13:00:</b> Xuất phát đi Phan Rang.<br><b>15:30 - 15:45:</b> Nghỉ ngơi ngắn tại Tuy Hòa.<br><b>18:00 - 18:15:</b> Nghỉ ngơi ngắn tại Nha Trang.<br><b>~20:00:</b> Đến <b>TP. Phan Rang</b>, nhận phòng, ăn tối và nghỉ ngơi.' },
+                    { day: 9, date: '07/09', title: 'Phan Rang – TP.HCM', distance: '~330 km', time: '~8 giờ', details: '<b>Sáng:</b> Ăn sáng tại Phan Rang.<br><b>07:00:</b> Xuất phát sớm về TP.HCM.<br><b>09:30 - 09:45:</b> Dừng chân nghỉ ngơi tại khu vực Phan Thiết.<br><b>12:00 - 13:00:</b> Ăn trưa tại khu vực Long Khánh.<br><b>~15:00 - 16:00:</b> Về đến <b>TP.HCM</b>, kết thúc chuyến đi an toàn.' },
                 ]
             };
 
@@ -246,53 +197,6 @@
             const planToggleDot = document.getElementById('plan-toggle-dot');
             const itineraryContainer = document.getElementById('itinerary-container');
             
-            const packingListModal = document.getElementById('packing-list-modal');
-            const packingListBtn = document.getElementById('packing-list-btn');
-            const closeModalBtn = document.getElementById('close-modal-btn');
-            const modalContent = document.getElementById('modal-content');
-
-            const apiKey = ""; 
-
-            async function callGemini(prompt, retries = 3, delay = 1000) {
-                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
-                
-                try {
-                    const response = await fetch(apiUrl, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
-                    });
-
-                    if (!response.ok) {
-                        if (response.status === 429 && retries > 0) {
-                            await new Promise(resolve => setTimeout(resolve, delay));
-                            return callGemini(prompt, retries - 1, delay * 2);
-                        }
-                        throw new Error(`API Error: ${response.status}`);
-                    }
-
-                    const result = await response.json();
-                    if (result.candidates && result.candidates.length > 0 &&
-                        result.candidates[0].content && result.candidates[0].content.parts &&
-                        result.candidates[0].content.parts.length > 0) {
-                        return result.candidates[0].content.parts[0].text;
-                    } else {
-                        throw new Error("Phản hồi không hợp lệ từ API.");
-                    }
-                } catch (error) {
-                    console.error("Lỗi gọi Gemini API:", error);
-                    return "Rất tiếc, đã có lỗi xảy ra. Vui lòng thử lại sau.";
-                }
-            }
-            
-            function formatGeminiResponse(text) {
-                return text
-                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
-                    .replace(/\*(.*?)\*/g, '<li>$1</li>')      
-                    .replace(/(\<\/li\>)/g, '$1\n')           
-                    .replace(/\n/g, '<br>');                   
-            }
-
             function renderItinerary() {
                 itineraryContainer.innerHTML = '';
                 const planSpecificItinerary = currentPlan === 'A' ? tripData.planA.itinerary : tripData.planB.itinerary;
@@ -328,12 +232,6 @@
                         <div class="accordion-content">
                             <div class="p-4 border-t border-gray-200 text-gray-600 text-sm">
                                 <p>${item.details || item.content}</p>
-                                <div class="mt-4">
-                                    <button class="gemini-btn text-xs font-bold py-1 px-3 rounded-lg shadow-sm suggest-activity-btn" data-location="${item.location}">
-                                        ✨ Gợi ý hoạt động
-                                    </button>
-                                    <div class="activity-suggestion mt-3 text-xs"></div>
-                                </div>
                             </div>
                         </div>
                     `;
@@ -414,10 +312,8 @@
                 updateUI();
             });
             
-            itineraryContainer.addEventListener('click', async function(e) {
+            itineraryContainer.addEventListener('click', function(e) {
                 const accordionToggle = e.target.closest('.accordion-toggle');
-                const suggestBtn = e.target.closest('.suggest-activity-btn');
-
                 if (accordionToggle) {
                     const content = accordionToggle.nextElementSibling;
                     const icon = accordionToggle.querySelector('svg');
@@ -435,37 +331,6 @@
                         icon.style.transform = 'rotate(180deg)';
                     }
                 }
-
-                if (suggestBtn) {
-                    e.stopPropagation();
-                    const location = suggestBtn.dataset.location;
-                    const resultDiv = suggestBtn.nextElementSibling;
-                    
-                    suggestBtn.disabled = true;
-                    resultDiv.innerHTML = '<div class="loader mx-auto"></div>';
-                    
-                    const prompt = `Gợi ý 3 hoạt động hoặc địa điểm ăn uống thú vị tại ${location}, Việt Nam cho khách du lịch phượt. Trình bày dưới dạng danh sách gạch đầu dòng, mỗi mục có tiêu đề in đậm.`;
-                    const response = await callGemini(prompt);
-                    
-                    resultDiv.innerHTML = formatGeminiResponse(response);
-                    
-                    const accordionContent = suggestBtn.closest('.accordion-content');
-                    if (accordionContent.style.maxHeight) {
-                        accordionContent.style.maxHeight = accordionContent.scrollHeight + "px";
-                    }
-                }
-            });
-
-            packingListBtn.addEventListener('click', async () => {
-                packingListModal.classList.remove('hidden');
-                modalContent.innerHTML = '<div class="loader mx-auto"></div>';
-                const prompt = `Tạo một danh sách đồ dùng chi tiết cần mang theo cho một chuyến phượt 9 ngày 8 đêm bằng xe máy ở Việt Nam, đi từ TP.HCM qua các vùng có khí hậu khác nhau như Tây Nguyên (Măng Đen) và vùng biển (Quy Nhơn, Quảng Ngãi). Phân loại danh sách thành các mục rõ ràng: Giấy tờ & Tiền bạc, Trang phục, Đồ điện tử, Y tế & Vệ sinh cá nhân, Dụng cụ sửa xe cơ bản, và Vật dụng khác.`;
-                const response = await callGemini(prompt);
-                modalContent.innerHTML = formatGeminiResponse(response);
-            });
-
-            closeModalBtn.addEventListener('click', () => {
-                packingListModal.classList.add('hidden');
             });
 
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
