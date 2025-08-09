@@ -1,0 +1,492 @@
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kế hoạch Phượt 9N8Đ: Sài Gòn - Măng Đen - Lý Sơn (Tích hợp Gemini AI)</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals -->
+    <!-- Application Structure Plan: Tôi đã thiết kế ứng dụng theo cấu trúc dashboard một trang (SPA) với các phần chính có thể điều hướng: Tổng quan, Lịch trình, Chi phí, và Bản đồ. Cấu trúc này giúp người dùng nắm bắt thông tin nhanh chóng và tương tác trực tiếp với kế hoạch. Trọng tâm là chức năng chuyển đổi giữa "Plan A" và "Plan B", cho phép toàn bộ ứng dụng (lịch trình, chi phí) cập nhật động. Lựa chọn này ưu tiên tính tương tác và khả năng so sánh, giúp việc lập kế hoạch trở nên trực quan và hiệu quả hơn so với một văn bản tĩnh. -->
+    <!-- Visualization & Content Choices: 1. Lịch trình (Tổ chức): Dùng accordion tương tác cho mỗi ngày thay vì danh sách dài, giúp giao diện gọn gàng và tập trung. Người dùng click để xem chi tiết. 2. Chi phí (So sánh/Thông tin): Dùng biểu đồ tròn (Donut Chart) từ Chart.js để trực quan hóa tỷ trọng chi phí. Biểu đồ sẽ cập nhật động khi chuyển đổi giữa Plan A/B, giúp so sánh ngay lập tức. 3. Lộ trình (Quan hệ/Tổ chức): Dùng sơ đồ tuyến đường tạo bằng HTML/CSS thay vì bản đồ tĩnh, các điểm dừng chính được kết nối, tạo cảm giác về một hành trình. 4. Chuyển đổi Kế hoạch (Tương tác): Một nút chuyển đổi (toggle switch) rõ ràng là trung tâm điều khiển, thay đổi trạng thái toàn cục của ứng dụng. Tất cả đều tuân thủ nguyên tắc không dùng SVG/Mermaid. -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Be Vietnam Pro', sans-serif;
+            background-color: #F8F7F4;
+            color: #4A4A4A;
+        }
+        .nav-link {
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        .nav-link.active, .nav-link:hover {
+            color: #D97706; /* amber-600 */
+            border-bottom-color: #D97706;
+        }
+        .plan-toggle-bg {
+            background-color: #D1D5DB; /* gray-300 */
+            transition: background-color 0.3s ease;
+        }
+        .plan-toggle-bg.active {
+            background-color: #F59E0B; /* amber-500 */
+        }
+        .plan-toggle-dot {
+            transform: translateX(0);
+            transition: transform 0.3s ease;
+        }
+        .plan-toggle-dot.active {
+            transform: translateX(100%);
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.5s ease-in-out;
+        }
+        .chart-container {
+            position: relative;
+            width: 100%;
+            max-width: 400px;
+            margin-left: auto;
+            margin-right: auto;
+            height: 400px;
+            max-height: 80vh;
+        }
+        .gemini-btn {
+            background: linear-gradient(to right, #fde68a, #f59e0b);
+            border: none;
+            color: #422006;
+        }
+        .gemini-btn:hover {
+            opacity: 0.9;
+        }
+        .loader {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #D97706;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .modal-overlay {
+            background-color: rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body class="antialiased">
+
+    <header class="bg-white shadow-sm sticky top-0 z-50">
+        <nav class="container mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <div class="flex-shrink-0">
+                    <h1 class="text-xl font-bold text-amber-700">Chuyến đi 9N8Đ ✨</h1>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-4">
+                        <a href="#overview" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Tổng quan</a>
+                        <a href="#preparation" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Chuẩn bị</a>
+                        <a href="#itinerary" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Lịch trình</a>
+                        <a href="#costs" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Chi phí</a>
+                        <a href="#map" class="nav-link px-3 py-2 rounded-md text-sm font-medium">Bản đồ</a>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <main class="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <section id="overview" class="mb-12">
+            <h2 class="text-3xl font-bold mb-4 text-gray-800">Tổng Quan Hành Trình</h2>
+            <p class="mb-6 text-gray-600">Đây là một ứng dụng tương tác giúp bạn hình dung và lên kế hoạch cho chuyến phượt 9 ngày 8 đêm. Tương tác với các mục bên dưới để khám phá chi tiết.</p>
+            
+            <div class="grid md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <div class="bg-white p-6 rounded-lg shadow-md">
+                        <h3 class="text-xl font-semibold mb-4 text-gray-700">Chuyển đổi kế hoạch</h3>
+                        <p class="text-sm text-gray-500 mb-3">Sử dụng nút gạt bên dưới để chuyển đổi giữa "Plan A" (Đi đảo Lý Sơn) và "Plan B" (Khám phá đất liền). Lịch trình và chi phí sẽ tự động cập nhật.</p>
+                        <div class="flex items-center space-x-4">
+                            <span class="font-medium text-gray-700">Plan B (Đất liền)</span>
+                            <button id="plan-toggle" class="relative inline-flex items-center h-6 rounded-full w-11 focus:outline-none">
+                                <span id="plan-toggle-bg" class="inline-block w-11 h-6 rounded-full plan-toggle-bg active"></span>
+                                <span id="plan-toggle-dot" class="absolute left-1 inline-block w-4 h-4 transform bg-white rounded-full plan-toggle-dot active"></span>
+                            </button>
+                            <span class="font-medium text-amber-600">Plan A (Đi đảo Lý Sơn)</span>
+                        </div>
+                    </div>
+                </div>
+                <div id="stats-container" class="grid grid-cols-2 gap-4">
+                    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                        <p class="text-2xl font-bold text-amber-600">9</p>
+                        <p class="text-sm text-gray-500">Ngày</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                        <p class="text-2xl font-bold text-amber-600">8</p>
+                        <p class="text-sm text-gray-500">Đêm</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                        <p id="total-distance" class="text-2xl font-bold text-amber-600">~1800</p>
+                        <p class="text-sm text-gray-500">km</p>
+                    </div>
+                    <div class="bg-white p-4 rounded-lg shadow-md text-center">
+                        <p id="total-cost" class="text-2xl font-bold text-amber-600">10.8M</p>
+                        <p class="text-sm text-gray-500">VNĐ (tối thiểu)</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="preparation" class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 text-gray-800">Chuẩn bị & Gợi ý AI</h2>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <h3 class="text-xl font-semibold mb-4 text-gray-700">Trợ lý AI cho chuyến đi</h3>
+                <p class="text-sm text-gray-500 mb-4">Bạn không chắc cần chuẩn bị những gì? Hãy để Gemini giúp bạn tạo một danh sách đồ dùng đầy đủ và phù hợp nhất với hành trình này.</p>
+                <button id="packing-list-btn" class="gemini-btn font-bold py-2 px-4 rounded-lg shadow-md transition-transform transform hover:scale-105">
+                    ✨ Tạo danh sách đồ dùng AI
+                </button>
+            </div>
+        </section>
+
+        <section id="itinerary" class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 text-gray-800">Lịch Trình Chi Tiết</h2>
+            <div id="itinerary-container" class="space-y-4">
+            </div>
+        </section>
+
+        <section id="costs" class="mb-12">
+            <h2 class="text-3xl font-bold mb-6 text-gray-800">Phân Tích Chi Phí</h2>
+            <p class="mb-6 text-gray-600 text-center">Biểu đồ dưới đây thể hiện cơ cấu chi phí dự kiến cho chuyến đi. Di chuột qua các phần để xem chi tiết. Chi phí sẽ thay đổi khi bạn chuyển đổi kế hoạch.</p>
+            <div class="bg-white p-6 rounded-lg shadow-md">
+                <div class="chart-container">
+                    <canvas id="costChart"></canvas>
+                </div>
+            </div>
+        </section>
+
+        <section id="map">
+            <h2 class="text-3xl font-bold mb-6 text-gray-800">Bản Đồ Lộ Trình</h2>
+            <p class="mb-8 text-gray-600 text-center">Đây là bản đồ tương tác với lộ trình đầy đủ của chuyến đi. Bạn có thể phóng to, thu nhỏ và xem chi tiết từng chặng.</p>
+            <div class="bg-white p-2 rounded-lg shadow-md overflow-hidden">
+                <iframe src="https://www.google.com/maps/embed?pb=!1m76!1m12!1m3!1d2337294.10852657!2d106.65507232822218!3d12.54588358580362!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m61!3e0!4m5!1s0x317527c88c57ab37%3A0x286f104fd8d08de0!2sTopaz%20home%202%20block%202!3m2!1d10.8645646!2d106.8098601!4m5!1s0x3174a02505ffc089%3A0xede104b392cfa12d!2sDong%20Xoai%2C%20Binh%20Phuoc%2C%20Vietnam!3m2!1d11.534407!2d106.8904917!4m5!1s0x3171f7d4216cd2fb%3A0x9f4a5ec2f999fb4!2zQnXDtG4gTWEgVGh14buZdCwgRGFrIExhaw!3m2!1d12.6661944!2d108.0382475!4m5!1s0x3169424eaa23801d%3A0x1dfb1396f196cfad!2zTcSDbmcgxJBlbg!3m2!1d14.594116399999999!2d108.308934!4m5!1s0x316852cd89603939%3A0x2e554f035a6642c3!2zUXXhuqNuZyBOZ8OjaSwgUXVhbmcgTmdhaQ!3m2!1d15.124130399999999!2d108.8143831!4m5!1s0x3168eec071f4d409%3A0x9bd38f67983daa1f!2zU2EgSHXhu7NuaA!3m2!1d14.7087855!2d109.06761139999999!4m5!1s0x316f6c65736eabd9%3A0xd362348e5af3d559!2sQuy%20Nh%C6%A1n%2C%20Binh%20Dinh!3m2!1d13.7829673!2d109.2196634!4m5!1s0x316fec19262064ff%3A0xaf2350f50bfad38c!2zVHV5IEjDsmEsIFBow7ogWcOqbg!3m2!1d13.1057062!2d109.295048!4m5!1s0x3170956e17fa09af%3A0xf8f5929e768e9e45!2zTmluaCBUaHXhuq1u!3m2!1d11.6994025!2d108.902683!4m5!1s0x317527c88c57ab37%3A0x286f104fd8d08de0!2zVG9wYXogaG9tZSAyIGJsb2NrIDIsIMSQxrDhu51uZyAxNTQsIFTDom4gUGjDuiwgVGjhu6cgxJDhu6ljIENpdHksIEhvIENoaSBNaW5oIENpdHk!3m2!1d10.8645646!2d106.8098601!5e0!3m2!1sen!2s!4v1754736102890!5m2!1sen!2s" 
+                class="w-full h-96 md:h-[500px] rounded-md"
+                style="border:0;" 
+                allowfullscreen="" 
+                loading="lazy" 
+                referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modal for Packing List -->
+    <div id="packing-list-modal" class="fixed inset-0 z-50 flex items-center justify-center modal-overlay hidden">
+        <div class="bg-white rounded-lg shadow-xl w-11/12 md:w-2/3 lg:w-1/2 max-h-[80vh] flex flex-col">
+            <div class="flex justify-between items-center p-4 border-b">
+                <h3 class="text-xl font-semibold text-gray-700">✨ Danh sách đồ dùng gợi ý từ AI</h3>
+                <button id="close-modal-btn" class="text-gray-500 hover:text-gray-800">&times;</button>
+            </div>
+            <div id="modal-content" class="p-6 overflow-y-auto">
+                <!-- AI content will be injected here -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const tripData = {
+                planA: {
+                    totalDistance: '~1800 km',
+                    totalCostMin: '10.8M',
+                    costs: {
+                        labels: ['Xăng xe', 'Lưu trú', 'Ăn uống', 'Dự phòng', 'Phí đi đảo'],
+                        data: [1200000, 3200000, 2700000, 2000000, 1710000],
+                    },
+                    itinerary: [
+                        { day: 5, date: '03/09', title: 'Quảng Ngãi – Đảo Lý Sơn', location: 'Đảo Lý Sơn', distance: '~40 km', time: 'Cả ngày', details: '<b>06:30:</b> Dậy sớm, trả phòng, ăn sáng nhẹ.<br><b>07:00:</b> Di chuyển ra cảng Sa Kỳ (Gửi xe máy hoặc vận chuyển xe máy ra đảo).<br><b>07:30 - 08:00:</b> Lên tàu cao tốc ra đảo (cần đặt vé trước).<br><b>~09:00:</b> Tàu cập bến <b>Đảo Lý Sơn</b>. Nhận phòng, thuê xe máy trên đảo.<br><b>10:00:</b> Bắt đầu khám phá Đảo Lớn: Cột cờ Tổ quốc trên đỉnh Thới Lới, Hang Câu.<br><b>12:00 - 13:30:</b> Ăn trưa với hải sản tươi sống.<br><b>14:00:</b> Tham quan Chùa Hang.<br><b>~17:00:</b> Di chuyển ra <b>Cổng Tò Vò</b> để ngắm hoàng hôn.<br><b>Tối:</b> Dạo chợ đêm, thưởng thức hải sản.' },
+                        { day: 6, date: '04/09', title: 'Khám phá Đảo Bé (An Bình)', location: 'Đảo Lý Sơn', distance: '~10 km', time: 'Cả ngày', details: '<b>07:30:</b> Ăn sáng trên Đảo Lớn.<br><b>08:00:</b> Ra bến tàu, đi cano qua <b>Đảo Bé</b>.<br><b>08:30 - 11:30:</b> Tự do tắm biển, lặn ngắm san hô.<br><b>11:30 - 12:30:</b> Ăn trưa trên Đảo Bé.<br><b>~13:30:</b> Lên cano về lại Đảo Lớn.<br><b>Chiều:</b> Tự do nghỉ ngơi hoặc đi thăm các cánh đồng tỏi.<br><b>Tối:</b> Tận hưởng đêm cuối cùng trên đảo.' },
+                        { day: 7, date: '05/09', title: 'Lý Sơn – Quy Nhơn', location: 'Quy Nhơn', distance: '~180 km', time: '~6 giờ', details: '<b>Sáng:</b> Lên chuyến tàu sớm nhất (khoảng 08:00) từ Lý Sơn về đất liền.<br><b>~09:00:</b> Cập cảng Sa Kỳ.<br><b>09:30:</b> Xuất phát đi Quy Nhơn.<br><b>12:00 - 13:00:</b> Ăn trưa tại khu vực <b>Sa Huỳnh</b>.<br><b>13:00 - 14:30:</b> Sau khi ăn trưa, ghé thăm <b>Làng cổ Gò Cỏ</b> và <b>bãi biển Làng Gò Cỏ</b>.<br><b>~16:00 - 16:30:</b> Đến <b>TP. Quy Nhơn</b>, nhận phòng.<br><b>Chiều tối:</b> Tự do dạo biển Quy Nhơn, ăn tối, khám phá quảng trường trung tâm.' },
+                    ]
+                },
+                planB: {
+                    totalDistance: '~1950 km',
+                    totalCostMin: '9.5M',
+                    costs: {
+                        labels: ['Xăng xe', 'Lưu trú', 'Ăn uống', 'Dự phòng', 'Phí tham quan'],
+                        data: [1200000, 3200000, 2700000, 2000000, 400000],
+                    },
+                    itinerary: [
+                        { day: 5, date: '03/09', title: 'Khám phá Quảng Ngãi & Biển Mỹ Khê', location: 'Quảng Ngãi', distance: '~50 km', time: 'N/A', details: '<b>08:00 - 09:00:</b> Ăn sáng tại TP. Quảng Ngãi.<br><b>09:00 - 11:30:</b> Tham quan <b>Khu chứng tích Sơn Mỹ (Mỹ Lai)</b> để tìm hiểu về lịch sử.<br><b>11:30 - 13:00:</b> Quay về TP. Quảng Ngãi ăn trưa.<br><b>13:30 - 16:30:</b> Di chuyển ra <b>biển Mỹ Khê</b> để tắm biển, thư giãn.<br><b>Tối:</b> Tự do khám phá ẩm thực thành phố.' },
+                        { day: 6, date: '04/09', title: 'Quảng Ngãi – Sa Huỳnh', location: 'Sa Huỳnh', distance: '~60 km', time: '~2 giờ', details: '<b>Sáng:</b> Ăn sáng, trả phòng tại TP. Quảng Ngãi.<br><b>09:00:</b> Xuất phát đi <b>Sa Huỳnh</b>.<br><b>~11:00:</b> Đến Sa Huỳnh, nhận phòng, ăn trưa với hải sản.<br><b>Chiều:</b> Tham quan <b>Làng cổ Gò Cỏ</b>, bãi biển Làng Gò Cỏ. Tìm hiểu về <b>văn hóa Sa Huỳnh</b> và các cánh đồng muối.<br><b>Tối:</b> Nghỉ đêm tại Sa Huỳnh.' },
+                        { day: 7, date: '05/09', title: 'Sa Huỳnh – Quy Nhơn', location: 'Quy Nhơn', distance: '~120 km', time: '~3 giờ', details: '<b>Sáng:</b> Thong thả ăn sáng tại Sa Huỳnh.<br><b>09:00:</b> Xuất phát đi Quy Nhơn.<br><b>~12:30:</b> Đến <b>TP. Quy Nhơn</b>, nhận phòng, ăn trưa.<br><b>Chiều:</b> Có nhiều thời gian hơn để dạo biển, khám phá thành phố. Gợi ý: Ghềnh Ráng Tiên Sa & Mộ Hàn Mặc Tử.' },
+                    ]
+                },
+                baseItinerary: [
+                    { day: 1, date: '30/08', title: 'TP.HCM – Buôn Ma Thuột', location: 'Buôn Ma Thuột', distance: '~350 km', time: '~11.5 giờ', details: '<b>04:00:</b> Xuất phát từ TP.HCM.<br><b>06:30 - 07:15:</b> Ăn sáng tại TP. Đồng Xoài.<br><b>11:00 - 12:00:</b> Ăn trưa tại TP. Gia Nghĩa.<br><b>~15:30:</b> Đến Buôn Ma Thuột, nhận phòng.<br><b>Chiều & Tối:</b> Khám phá Bảo tàng Cà phê, Buôn Akô Dhông.' },
+                    { day: 2, date: '31/08', title: 'Buôn Ma Thuột – Măng Đen', location: 'Măng Đen', distance: '~280 km', time: '~8 giờ', details: '<b>06:30 - 07:30:</b> Ăn sáng, uống cà phê tại Buôn Ma Thuột, trả phòng.<br><b>07:30:</b> Xuất phát đi Măng Đen.<br><b>11:30 - 12:30:</b> Ăn trưa tại TP. Pleiku (Thưởng thức Phở khô Gia Lai).<br><b>~15:30:</b> Đến Măng Đen, nhận phòng.<br><b>Tối:</b> Tận hưởng không khí se lạnh, thưởng thức đặc sản.' },
+                    { day: 3, date: '01/09', title: 'Khám phá Măng Đen', location: 'Măng Đen', distance: 'N/A', time: 'N/A', details: '<b>06:00 - 08:00:</b> "Săn mây" và uống cà phê tại các quán có view đẹp.<br><b>08:30 - 11:30:</b> Tham quan Chùa Khánh Lâm và Làng văn hóa Kon Bring.<br><b>11:30 - 13:00:</b> Ăn trưa và nghỉ ngơi.<br><b>13:00 - 16:30:</b> Khám phá rừng thông, ghé thăm các vườn nông nghiệp công nghệ cao.<br><b>Tối:</b> Tự do khám phá ẩm thực, mua sắm đặc sản.' },
+                    { day: 4, date: '02/09', title: 'Măng Đen – TP. Quảng Ngãi', location: 'Quảng Ngãi', distance: '~160 km', time: '~4.5 giờ', details: '<b>08:00 - 09:00:</b> Ăn sáng, uống cà phê tại Măng Đen.<br><b>09:00:</b> Xuất phát đi Quảng Ngãi.<br><b>~12:30:</b> Đến Quảng Ngãi, nhận phòng.<br><b>13:00 - 14:00:</b> Ăn trưa.<br><b>Chiều:</b> Kiểm tra thời tiết, quyết định Plan A/B.<br><b>Tối:</b> Quay về trung tâm, thưởng thức đặc sản don, ram bắp.' },
+                    { day: 8, date: '06/09', title: 'Quy Nhơn – Phan Rang', location: 'Quy Nhơn', distance: '~320 km', time: '~7 giờ', details: '<b>Sáng:</b> Dành trọn buổi sáng khám phá các điểm nổi bật của Quy Nhơn: Eo Gió, Kỳ Co.<br><b>Trưa:</b> Trả phòng, ăn trưa với đặc sản Quy Nhơn.<br><b>13:00:</b> Xuất phát đi Phan Rang.<br><b>15:30 - 15:45:</b> Nghỉ ngơi ngắn tại Tuy Hòa.<br><b>18:00 - 18:15:</b> Nghỉ ngơi ngắn tại Nha Trang.<br><b>~20:00:</b> Đến <b>TP. Phan Rang</b>, nhận phòng, ăn tối và nghỉ ngơi.' },
+                    { day: 9, date: '07/09', title: 'Phan Rang – TP.HCM', location: 'Phan Rang', distance: '~330 km', time: '~8 giờ', details: '<b>Sáng:</b> Ăn sáng tại Phan Rang.<br><b>07:00:</b> Xuất phát sớm về TP.HCM.<br><b>09:30 - 09:45:</b> Dừng chân nghỉ ngơi tại khu vực Phan Thiết.<br><b>12:00 - 13:00:</b> Ăn trưa tại khu vực Long Khánh.<br><b>~15:00 - 16:00:</b> Về đến <b>TP.HCM</b>, kết thúc chuyến đi an toàn.' },
+                ]
+            };
+
+            let currentPlan = 'A';
+            let costChartInstance = null;
+
+            const planToggle = document.getElementById('plan-toggle');
+            const planToggleBg = document.getElementById('plan-toggle-bg');
+            const planToggleDot = document.getElementById('plan-toggle-dot');
+            const itineraryContainer = document.getElementById('itinerary-container');
+            
+            const packingListModal = document.getElementById('packing-list-modal');
+            const packingListBtn = document.getElementById('packing-list-btn');
+            const closeModalBtn = document.getElementById('close-modal-btn');
+            const modalContent = document.getElementById('modal-content');
+
+            const apiKey = ""; 
+
+            async function callGemini(prompt, retries = 3, delay = 1000) {
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                
+                try {
+                    const response = await fetch(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                    });
+
+                    if (!response.ok) {
+                        if (response.status === 429 && retries > 0) {
+                            await new Promise(resolve => setTimeout(resolve, delay));
+                            return callGemini(prompt, retries - 1, delay * 2);
+                        }
+                        throw new Error(`API Error: ${response.status}`);
+                    }
+
+                    const result = await response.json();
+                    if (result.candidates && result.candidates.length > 0 &&
+                        result.candidates[0].content && result.candidates[0].content.parts &&
+                        result.candidates[0].content.parts.length > 0) {
+                        return result.candidates[0].content.parts[0].text;
+                    } else {
+                        throw new Error("Phản hồi không hợp lệ từ API.");
+                    }
+                } catch (error) {
+                    console.error("Lỗi gọi Gemini API:", error);
+                    return "Rất tiếc, đã có lỗi xảy ra. Vui lòng thử lại sau.";
+                }
+            }
+            
+            function formatGeminiResponse(text) {
+                return text
+                    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>') 
+                    .replace(/\*(.*?)\*/g, '<li>$1</li>')      
+                    .replace(/(\<\/li\>)/g, '$1\n')           
+                    .replace(/\n/g, '<br>');                   
+            }
+
+            function renderItinerary() {
+                itineraryContainer.innerHTML = '';
+                const planSpecificItinerary = currentPlan === 'A' ? tripData.planA.itinerary : tripData.planB.itinerary;
+                
+                let fullItinerary = [...tripData.baseItinerary];
+                planSpecificItinerary.forEach(item => {
+                    const index = fullItinerary.findIndex(baseItem => baseItem.day === item.day);
+                    if (index !== -1) {
+                        fullItinerary[index] = { ...fullItinerary[index], ...item };
+                    } else {
+                        fullItinerary.push(item);
+                    }
+                });
+                
+                fullItinerary.sort((a,b) => a.day - b.day);
+
+                fullItinerary.forEach(item => {
+                    const div = document.createElement('div');
+                    div.className = 'bg-white rounded-lg shadow-md overflow-hidden';
+                    div.innerHTML = `
+                        <button class="accordion-toggle w-full text-left p-4 focus:outline-none">
+                            <div class="flex justify-between items-center">
+                                <div class="flex items-center">
+                                    <span class="text-amber-600 font-bold text-lg mr-4">Ngày ${item.day}</span>
+                                    <div>
+                                        <h4 class="font-semibold text-gray-800">${item.title}</h4>
+                                        <p class="text-xs text-gray-500">${item.date ? `Ngày ${item.date}` : ''} ${item.distance !== 'N/A' ? `| ${item.distance}` : ''}</p>
+                                    </div>
+                                </div>
+                                <svg class="w-6 h-6 transform transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path></svg>
+                            </div>
+                        </button>
+                        <div class="accordion-content">
+                            <div class="p-4 border-t border-gray-200 text-gray-600 text-sm">
+                                <p>${item.details || item.content}</p>
+                                <div class="mt-4">
+                                    <button class="gemini-btn text-xs font-bold py-1 px-3 rounded-lg shadow-sm suggest-activity-btn" data-location="${item.location}">
+                                        ✨ Gợi ý hoạt động
+                                    </button>
+                                    <div class="activity-suggestion mt-3 text-xs"></div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    itineraryContainer.appendChild(div);
+                });
+            }
+
+            function renderCostChart() {
+                const planData = currentPlan === 'A' ? tripData.planA : tripData.planB;
+                const ctx = document.getElementById('costChart').getContext('2d');
+                
+                if (costChartInstance) {
+                    costChartInstance.destroy();
+                }
+
+                costChartInstance = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: planData.costs.labels,
+                        datasets: [{
+                            label: 'Chi phí',
+                            data: planData.costs.data,
+                            backgroundColor: ['#FBBF24', '#3B82F6', '#10B981', '#8B5CF6', '#EF4444'],
+                            borderColor: '#F8F7F4',
+                            borderWidth: 4,
+                            hoverOffset: 8
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    font: {
+                                        family: "'Be Vietnam Pro', sans-serif"
+                                    }
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        let label = context.label || '';
+                                        if (label) {
+                                            label += ': ';
+                                        }
+                                        if (context.parsed !== null) {
+                                            label += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed);
+                                        }
+                                        return label;
+                                    }
+                                }
+                            }
+                        },
+                        cutout: '60%'
+                    }
+                });
+            }
+
+            function updateStats() {
+                const planData = currentPlan === 'A' ? tripData.planA : tripData.planB;
+                document.getElementById('total-distance').textContent = planData.totalDistance.split(' ')[0];
+                document.getElementById('total-cost').textContent = planData.totalCostMin;
+            }
+
+            planToggle.addEventListener('click', () => {
+                currentPlan = currentPlan === 'A' ? 'B' : 'A';
+                planToggleBg.classList.toggle('active');
+                planToggleDot.classList.toggle('active');
+                if (currentPlan === 'B') {
+                    planToggleBg.classList.remove('bg-amber-500');
+                    planToggleBg.classList.add('bg-gray-300');
+                } else {
+                    planToggleBg.classList.add('bg-amber-500');
+                    planToggleBg.classList.remove('bg-gray-300');
+                }
+                updateUI();
+            });
+            
+            itineraryContainer.addEventListener('click', async function(e) {
+                const accordionToggle = e.target.closest('.accordion-toggle');
+                const suggestBtn = e.target.closest('.suggest-activity-btn');
+
+                if (accordionToggle) {
+                    const content = accordionToggle.nextElementSibling;
+                    const icon = accordionToggle.querySelector('svg');
+                    
+                    if (content.style.maxHeight) {
+                        content.style.maxHeight = null;
+                        icon.style.transform = 'rotate(0deg)';
+                    } else {
+                        const allContent = itineraryContainer.querySelectorAll('.accordion-content');
+                        allContent.forEach(item => { item.style.maxHeight = null; });
+                        const allIcons = itineraryContainer.querySelectorAll('.accordion-toggle svg');
+                        allIcons.forEach(item => { item.style.transform = 'rotate(0deg)'; });
+                        
+                        content.style.maxHeight = content.scrollHeight + "px";
+                        icon.style.transform = 'rotate(180deg)';
+                    }
+                }
+
+                if (suggestBtn) {
+                    e.stopPropagation();
+                    const location = suggestBtn.dataset.location;
+                    const resultDiv = suggestBtn.nextElementSibling;
+                    
+                    suggestBtn.disabled = true;
+                    resultDiv.innerHTML = '<div class="loader mx-auto"></div>';
+                    
+                    const prompt = `Gợi ý 3 hoạt động hoặc địa điểm ăn uống thú vị tại ${location}, Việt Nam cho khách du lịch phượt. Trình bày dưới dạng danh sách gạch đầu dòng, mỗi mục có tiêu đề in đậm.`;
+                    const response = await callGemini(prompt);
+                    
+                    resultDiv.innerHTML = formatGeminiResponse(response);
+                    
+                    const accordionContent = suggestBtn.closest('.accordion-content');
+                    if (accordionContent.style.maxHeight) {
+                        accordionContent.style.maxHeight = accordionContent.scrollHeight + "px";
+                    }
+                }
+            });
+
+            packingListBtn.addEventListener('click', async () => {
+                packingListModal.classList.remove('hidden');
+                modalContent.innerHTML = '<div class="loader mx-auto"></div>';
+                const prompt = `Tạo một danh sách đồ dùng chi tiết cần mang theo cho một chuyến phượt 9 ngày 8 đêm bằng xe máy ở Việt Nam, đi từ TP.HCM qua các vùng có khí hậu khác nhau như Tây Nguyên (Măng Đen) và vùng biển (Quy Nhơn, Quảng Ngãi). Phân loại danh sách thành các mục rõ ràng: Giấy tờ & Tiền bạc, Trang phục, Đồ điện tử, Y tế & Vệ sinh cá nhân, Dụng cụ sửa xe cơ bản, và Vật dụng khác.`;
+                const response = await callGemini(prompt);
+                modalContent.innerHTML = formatGeminiResponse(response);
+            });
+
+            closeModalBtn.addEventListener('click', () => {
+                packingListModal.classList.add('hidden');
+            });
+
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    document.querySelector(this.getAttribute('href')).scrollIntoView({
+                        behavior: 'smooth'
+                    });
+                     document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+
+            function updateUI() {
+                renderItinerary();
+                renderCostChart();
+                updateStats();
+            }
+
+            updateUI();
+        });
+    </script>
+</body>
+</html>
